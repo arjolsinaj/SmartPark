@@ -6,7 +6,6 @@
     <title>SmartPark AI</title>
 
     <style>
-
         *{
             margin:0;
             padding:0;
@@ -58,13 +57,20 @@
             margin-bottom:20px;
         }
 
+        .left h3{
+            color:#38bdf8;
+            font-size:26px;
+            margin-bottom:10px;
+        }
+
         .left p{
             font-size:20px;
             color:#cbd5e1;
             line-height:35px;
         }
 
-        button{
+        .btn{
+            display:inline-block;
             margin-top:30px;
             padding:15px 35px;
             border:none;
@@ -74,6 +80,7 @@
             font-size:18px;
             cursor:pointer;
             font-weight:bold;
+            text-decoration:none;
         }
 
         .card{
@@ -100,65 +107,62 @@
             font-size:35px;
             font-weight:bold;
         }
-
     </style>
-
 </head>
 
 <body>
 
 <nav>
+    <h2>SmartPark AI</h2>
 
-<h2>SmartPark AI</h2>
-
-<ul>
-<li>Home</li>
-<li>Dashboard</li>
-<li>Parking</li>
-<li>Contact</li>
-</ul>
-
+    <ul>
+        <li>Home</li>
+        <li>Dashboard</li>
+        <li>Parking</li>
+        <li>Contact</li>
+    </ul>
 </nav>
 
 <section class="hero">
 
-<div class="left">
+    <div class="left">
+        <h1>Smart Parking Management System</h1>
 
-<h1>Smart Parking Management System</h1>
+        {% if parking %}
+            <h3>{{ parking.name }}</h3>
+            <p>{{ parking.address }}</p>
+        {% endif %}
 
-<p>
-Monitor parking spaces in real time, manage vehicles,
-track revenue and use Artificial Intelligence to optimize
-parking efficiency.
-</p>
+        <p>
+            Monitor parking spaces in real time, manage vehicles,
+            track revenue and use Artificial Intelligence to optimize
+            parking efficiency.
+        </p>
 
-<button>Get Started</button>
+        <a href="/admin/" class="btn">Get Started</a>
+    </div>
 
-</div>
+    <div class="card">
+        <h2>Live Statistics</h2>
 
-<div class="card">
+        <div class="box">
+            Free Parking Spaces
+            <br><br>
+            <div class="number">{{ free_spaces }}</div>
+        </div>
 
-<h2>Live Statistics</h2>
+        <div class="box">
+            Vehicles Inside
+            <br><br>
+            <div class="number">{{ vehicles_inside }}</div>
+        </div>
 
-<div class="box">
-Free Parking Spaces
-<br><br>
-<div class="number">48</div>
-</div>
-
-<div class="box">
-Vehicles Inside
-<br><br>
-<div class="number">127</div>
-</div>
-
-<div class="box">
-Revenue Today
-<br><br>
-<div class="number">€430</div>
-</div>
-
-</div>
+        <div class="box">
+            Revenue Today
+            <br><br>
+            <div class="number">€{{ revenue_today }}</div>
+        </div>
+    </div>
 
 </section>
 
