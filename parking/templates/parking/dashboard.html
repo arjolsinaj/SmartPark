@@ -23,7 +23,6 @@
     {% endif %}
 
     <div class="row mt-4">
-
         <div class="col-md-4">
             <div class="card bg-primary text-white shadow">
                 <div class="card-body">
@@ -50,7 +49,51 @@
                 </div>
             </div>
         </div>
+    </div>
+<div class="row mt-4">
 
+    <div class="col-md-3">
+        <div class="card bg-info text-white shadow">
+            <div class="card-body text-center">
+                <h6>Total Vehicles</h6>
+                <h2>{{ total_vehicles }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-secondary text-white shadow">
+            <div class="card-body text-center">
+                <h6>Entries Today</h6>
+                <h2>{{ entries_today }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-danger text-white shadow">
+            <div class="card-body text-center">
+                <h6>Exits Today</h6>
+                <h2>{{ exits_today }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-success text-white shadow">
+            <div class="card-body text-center">
+                <h6>Occupancy</h6>
+                <h2>{{ occupancy_rate }}%</h2>
+            </div>
+        </div>
+    </div>
+
+</div>
+    <div class="card bg-black text-white mt-5 shadow">
+        <div class="card-body">
+            <h4 class="text-info">Revenue by Day</h4>
+            <canvas id="revenueChart"></canvas>
+        </div>
     </div>
 
     <div class="d-flex justify-content-between align-items-center mt-5">
@@ -62,18 +105,12 @@
     </div>
 
     <form method="GET" class="row mt-3 mb-3 g-2">
-
-        <div class="col-md-6">
-            <input
-                type="text"
-                name="search"
-                class="form-control"
-                placeholder="Search plate number..."
-                value="{{ search_query }}"
-            >
+        <div class="col-md-4">
+            <input type="text" name="search" class="form-control"
+                   placeholder="Search plate number..." value="{{ search_query }}">
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
             <select name="status" class="form-select">
                 <option value="all" {% if status_filter == "all" %}selected{% endif %}>All Vehicles</option>
                 <option value="inside" {% if status_filter == "inside" %}selected{% endif %}>Inside</option>
@@ -81,16 +118,18 @@
             </select>
         </div>
 
-        <div class="col-md-3 d-flex gap-2">
-            <button type="submit" class="btn btn-outline-info w-50">
-                Filter
-            </button>
-
-            <a href="/dashboard/" class="btn btn-outline-secondary w-50">
-                Clear
-            </a>
+        <div class="col-md-2">
+            <input type="date" name="start_date" class="form-control" value="{{ start_date }}">
         </div>
 
+        <div class="col-md-2">
+            <input type="date" name="end_date" class="form-control" value="{{ end_date }}">
+        </div>
+
+        <div class="col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-outline-info w-50">Filter</button>
+            <a href="/dashboard/" class="btn btn-outline-secondary w-50">Clear</a>
+        </div>
     </form>
 
     <table class="table table-dark table-striped table-hover">
@@ -106,14 +145,11 @@
         </thead>
 
         <tbody>
-
         {% for vehicle in vehicles %}
-
             <tr>
                 <td>{{ vehicle.plate_number }}</td>
                 <td>{{ vehicle.entry_time }}</td>
                 <td>{{ vehicle.exit_time }}</td>
-
                 <td>
                     {% if vehicle.is_inside %}
                         <span class="badge bg-success">Inside</span>
@@ -121,42 +157,77 @@
                         <span class="badge bg-danger">Exited</span>
                     {% endif %}
                 </td>
-
                 <td>€{{ vehicle.fee }}</td>
-
                 <td>
-                    <a href="/vehicle/{{ vehicle.id }}/" class="btn btn-outline-info btn-sm">
-                        View
-                    </a>
+                    <a href="/vehicle/{{ vehicle.id }}/" class="btn btn-outline-info btn-sm">View</a>
 
                     {% if vehicle.is_inside %}
-                        <a href="/exit-vehicle/{{ vehicle.id }}/" class="btn btn-danger btn-sm">
-                            Exit
-                        </a>
+                        <a href="/exit-vehicle/{{ vehicle.id }}/" class="btn btn-danger btn-sm">Exit</a>
                     {% else %}
-                        <span class="text-success ms-2">
-                            Completed
-                        </span>
+                        <span class="text-success ms-2">Completed</span>
                     {% endif %}
                 </td>
             </tr>
-
         {% empty %}
-
             <tr>
-                <td colspan="6" class="text-center">
-                    No vehicles found.
-                </td>
+                <td colspan="6" class="text-center">No vehicles found.</td>
             </tr>
-
         {% endfor %}
-
         </tbody>
     </table>
 
+    {% if page_obj.has_other_pages %}
+    <nav>
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?page={{ page_obj.previous_page_number }}&search={{ search_query }}&status={{ status_filter }}&start_date={{ start_date }}&end_date={{ end_date }}">
+                        Previous
+                    </a>
+                </li>
+            {% endif %}
+
+            <li class="page-item disabled">
+                <span class="page-link">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+            </li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?page={{ page_obj.next_page_number }}&search={{ search_query }}&status={{ status_filter }}&start_date={{ start_date }}&end_date={{ end_date }}">
+                        Next
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const labels = {{ chart_labels|safe }};
+    const values = {{ chart_values|safe }};
+
+    const ctx = document.getElementById('revenueChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Revenue (€)',
+                data: values
+            }]
+        }
+    });
+</script>
 
 </body>
 </html>
-
        
